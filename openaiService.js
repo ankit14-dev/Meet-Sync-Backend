@@ -1,21 +1,25 @@
-// ollamaService.js
-const axios = require('axios');
+// geminiService.js
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require('dotenv').config();
 
-const OLLAMA_ENDPOINT = 'http://localhost:11434/api/generate';
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const generateSummary = async (text) => {
   try {
-    const response = await axios.post(OLLAMA_ENDPOINT, {
-      model: 'llama3.1:8b', // or any other model you have pulled
-      prompt: `Please provide a concise summary of the following text:\n\n${text}`,
-      stream: false
-    });
+    // Get the generative model
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    // Ollama returns response in response.data.response
-    return response.data.response;
+    // Generate summary
+    const prompt = `Please provide a concise summary of the following text:\n\n${text}`;
+    const result = await model.generateContent(prompt);
+    console.log(result)
+    const response = result.response;
+    
+    return response.text();
     
   } catch (error) {
-    console.error("Error generating summary with Ollama:", error);
+    console.error("Error generating summary with Gemini:", error);
     throw error;
   }
 };

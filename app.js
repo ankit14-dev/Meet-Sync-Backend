@@ -31,12 +31,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+app.get("/generate",(req,res)=>{});
+
 app.post("/upload", upload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).send("No file uploaded");
   console.log(req.file);
   console.log(req.body);
-
-  res.json({ message: "File uploaded successfully" });
   const filename = path.parse(req.file.filename).name;
   const audioPath = `./public/audio/${filename}.mp3`;
   const videoPath = `./public/files/${req.file.filename}`;
@@ -56,10 +56,17 @@ app.post("/upload", upload.single("file"), (req, res) => {
     // Delete the original video file
     await fs.unlink(audioPath);
     console.log(`Deleted original audio file: ${audioPath}`);
-    console.log(transcribe);
-
+    console.log("Summary Started")
     const summary=await generateSummary(transcribe);
     console.log(summary);
+
+    res.json({
+      success:true,
+      message: "File uploaded successfully",
+      transcribe,
+      summary
+    })
+
   }) 
   const transcribeAudio = async () => {
     
@@ -68,7 +75,6 @@ app.post("/upload", upload.single("file"), (req, res) => {
       
       console.log("Transcription started");
       const transcript = await client.transcripts.transcribe(data);
-      console.log(transcript);
       console.log("Transcription complete");
       return transcript.text;
     } catch (err) {
@@ -76,7 +82,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
     }
   }; 
 });
-
-app.listen(5000, () => {
-  console.log("Server is running on port 5000");
+const PORT=process.env.PORT || 5000
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
