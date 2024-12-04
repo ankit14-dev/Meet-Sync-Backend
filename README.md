@@ -88,6 +88,7 @@ npm install
 ```
 
 # Project Structure
+```
 meetsync/
 ├── server/
 │   ├── public/
@@ -103,3 +104,4 @@ meetsync/
 │   │   └── components/
 │   └── public/
 └── README.md
+```
